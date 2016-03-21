@@ -14,10 +14,17 @@ ESP8266::ESP8266(unsigned int pinESPrx, unsigned int pinESPtx, const char ssid[]
 }
 
 void ESP8266::initESP8266(unsigned int pinESPrx, unsigned int pinESPtx, const char ssid[], const char password[]) {
+  
+  // Initialize data members
   this->pinESPrx = pinESPrx;
   this->pinESPtx = pinESPtx;
   this->wifi_password = String(password);
-  this->wifi_ssid = String(ssid);  
+  this->wifi_ssid = String(ssid);
+  
+  // Setup serial IO pin directions
+  pinMode(pinESPrx, INPUT);
+  pinMode(pinESPtx, OUTPUT);
+
 }
 
 void ESP8266::setwifi_password(const char password[]) { 
