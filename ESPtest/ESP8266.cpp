@@ -1,13 +1,19 @@
-#include <SoftwareSerial.h>
+#include <SoftwareSerial.h>   // This class will derive from the softwareserial class
 #include "ESP8266.h"
 
-ESP8266::ESP8266(unsigned int pinESPrx, unsigned int pinESPtx) : SoftwareSerial(pinESPrx,pinESPtx) {
+ESP8266::ESP8266(unsigned int pinESPrx, unsigned int pinESPtx) 
+: SoftwareSerial(pinESPrx,pinESPtx) 
+{
   initESP8266(pinESPrx, pinESPtx, "", "");
 }
 
 ESP8266::ESP8266(unsigned int pinESPrx, unsigned int pinESPtx, const char ssid[], const char password[]) 
-: SoftwareSerial(pinESPrx,pinESPtx), pinESPtx)_ 
+: SoftwareSerial(pinESPrx,pinESPtx) 
 {
+  initESP8266(pinESPrx, pinESPtx, ssid, password);
+}
+
+void ESP8266::initESP8266(unsigned int pinESPrx, unsigned int pinESPtx, const char ssid[], const char password[]) {
   this->pinESPrx = pinESPrx;
   this->pinESPtx = pinESPtx;
   this->wifi_password = String(password);
