@@ -7,7 +7,11 @@ class ESP8266 : public SoftwareSerial {
 
     // Constructors
     ESP8266(unsigned int pinESPrx, unsigned int pinESPtx);
+    ESP8266(unsigned int pinESPrx, unsigned int pinESPtx, const char ssid[], const char password[]);
 
+    // Destructor
+    ~ESP8266();
+  
     // Member functions
     void    setwifi_password(const char password[]);
     void    setwifi_ssid(const char ssid[]);
@@ -15,6 +19,9 @@ class ESP8266 : public SoftwareSerial {
     bool    checkwifi_password(const char wifi_password[]);
   
   private:
+
+    // Member functions
+    void initESP8266(unsigned int pinESPrx, unsigned int pinESPtx, const char ssid[], const char password[]);
 
     // Data members
     unsigned int  pinESPrx;
