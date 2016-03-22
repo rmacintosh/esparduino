@@ -14,7 +14,7 @@ esptool.py write_flash 0x00000 at/noboot/eagle.flash.bin 0x3e000 at/blank.bin 0x
 *   Project Includes                                                            *
 ********************************************************************************/
 
-#include <SoftwareSerial.h>   // library for software uart
+#include "ESP8266.h"   // library for software uart
 
 
 /********************************************************************************
@@ -40,7 +40,7 @@ const char CWMODE_BOTH    = '3';
 const char CIPMUX_SINGLE  = '0';
 const char CIPMUX_MULTI   = '1';
 
-SoftwareSerial ESP8266comms(ESP8266_rxPin, ESP8266_txPin);
+ESP8266 ESPcomms(ESP8266_rxPin, ESP8266_txPin);
 
 /********************************************************************************
 *   Project Defines                                                             *

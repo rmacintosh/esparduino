@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <SoftwareSerial.h>   // This class will derive from the softwareserial class
 #include "ESP8266.h"
 
