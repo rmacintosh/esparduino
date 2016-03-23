@@ -13,9 +13,9 @@ class ESP8266 : public SoftwareSerial {
     ~ESP8266();
   
     // Member functions
-    void    setwifi_password(const char password[]);
-    void    setwifi_ssid(const char ssid[]);
-    String  getwifi_ssid(void);
+    void    setwifi_password	(const char password[]);
+    void    setwifi_ssid			(const char ssid[]);
+    String  getwifi_ssid			(void);
     bool    checkwifi_password(const char wifi_password[]);
   
   private:

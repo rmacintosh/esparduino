@@ -18,11 +18,12 @@ esptool.py write_flash 0x00000 at/noboot/eagle.flash.bin 0x3e000 at/blank.bin 0x
 
 
 /********************************************************************************
-*   Project Defines                                                             *
+*   Project Defines / Constants                                                 *
 ********************************************************************************/
 
-#define ESP8266_rxPin 4
-#define ESP8266_txPin 5
+#define ESP8266_rxPin 		4
+#define ESP8266_txPin 		5
+#define ESP_DEFAULT_BAUD 	115200
 
 // WiFi SSID and Password definition
 const char SSID_ESP[] = "YOUR SSID";
@@ -47,11 +48,17 @@ ESP8266 ESPcomms(ESP8266_rxPin, ESP8266_txPin);
 ********************************************************************************/
 
 void setup() {
-  // put your setup code here, to run once:
+
+  ESP8266.begin(ESP_DEFAULT_BAUD);
+  ESP8266.listen();						// not needed unless using other software serial instances
+  Serial.begin(57600); 				// For printing status and debug
+  delay(3000);								// Delay before kicking things off
 
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+
+  ESP8266.print("AT\r\n");		// Send 'AT' to test if ESP is responding
+  
 
 }
