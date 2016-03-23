@@ -49,6 +49,8 @@ ESP8266 ESPcomms(ESP8266_rxPin, ESP8266_txPin);
 
 unsigned long previousMicros, currentMicros, interval;
 
+enum ESPstatus { unknown, AT_cmd, RST_cmd, ... };
+
 void setup() {
 
   ESP8266.begin(ESP_DEFAULT_BAUD);
@@ -57,6 +59,7 @@ void setup() {
   delay(3000);																// Delay before kicking things off
   currentMicros = previousMicros = micros();	// Get initial timestamp
   interval = 3000;														// Max time before checking serial buffer
+  ESPstatus state_of_ESP = unknown;
 
 }
 
@@ -65,7 +68,12 @@ void loop() {
   currentMicros = micros(); // grab current time
 
 // use state machine to get ESP module ready send or receive data  
+  
   ESP8266.print("AT\r\n");	// Send 'AT' to test if ESP is responding
+  switch(espState) {
+    
+  }
+  
 //---------------------------------------------------------------
 
   // check if "interval" time has passed (4 milliseconds)
