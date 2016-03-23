@@ -44,21 +44,37 @@ const char CIPMUX_MULTI   = '1';
 ESP8266 ESPcomms(ESP8266_rxPin, ESP8266_txPin);
 
 /********************************************************************************
-*   Project Defines                                                             *
+*   Program                                                                     *
 ********************************************************************************/
+
+unsigned long previousMicros, currentMicros, interval;
 
 void setup() {
 
   ESP8266.begin(ESP_DEFAULT_BAUD);
-  ESP8266.listen();						// not needed unless using other software serial instances
-  Serial.begin(57600); 				// For printing status and debug
-  delay(3000);								// Delay before kicking things off
+  ESP8266.listen();														// not needed unless using other software serial instances
+  Serial.begin(57600); 												// For printing status and debug
+  delay(3000);																// Delay before kicking things off
+  currentMicros = previousMicros = micros();	// Get initial timestamp
+  interval = 3000;														// Max time before checking serial buffer
 
 }
 
 void loop() {
 
-  ESP8266.print("AT\r\n");		// Send 'AT' to test if ESP is responding
+  currentMicros = micros(); // grab current time
+
+// use state machine to get ESP module ready send or receive data  
+  ESP8266.print("AT\r\n");	// Send 'AT' to test if ESP is responding
+//---------------------------------------------------------------
+
+  // check if "interval" time has passed (4 milliseconds)
+  if (((unsigned long)(currentMicros - previousMicros) >= interval) || (ESP8266.overflow()) {
   
+    // Check our serial buffer before it overflows!
+
+    // save the "current" time
+    previousMicros = micros();
+  }
 
 }
