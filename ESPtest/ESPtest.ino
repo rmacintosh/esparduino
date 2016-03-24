@@ -65,22 +65,25 @@ void setup() {
 
 void loop() {
 
-  currentMicros = micros(); // grab current time
+	// Grab current time
+  currentMicros = micros();
 
-  // Try to get out of unknown state by sending 'AT' to test if ESP is responding
+  // Try to get out of unknown state by sending a reset to ESP module
   if(state_of_ESP == unknown) {
   	ESP8266.print("AT+RST\r\n");
   	state_of_ESP = RST_cmd;
   }
 
-	// use state machine to get ESP module ready send or receive data  
-  
-  ESP8266.print("AT\r\n");	// Send 'AT' to test if ESP is responding
+	// Use state machine to get ESP module ready to send or receive data  
   switch(state_of_ESP) {
-    
-  }
   
-//---------------------------------------------------------------
+  	case RST_cmd:				// Last command sent to ESP module was a reset
+    	ESP8266.print("AT\r\n");
+    	break;
+    
+    default:
+    	break;
+  }
 
   // check if "interval" time has passed (4 milliseconds)
   if (((unsigned long)(currentMicros - previousMicros) >= interval) || (ESP8266.overflow()) {
