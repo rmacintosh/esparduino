@@ -49,7 +49,7 @@ ESP8266 ESPcomms(ESP8266_rxPin, ESP8266_txPin);
 
 unsigned long previousMicros, currentMicros, interval;
 
-enum ESPstatus { unknown, AT_cmd, RST_cmd, ... };
+enum ESPstatus { unknown, AT_cmd, RST_cmd, LAP_cmd, JAP_cmd, QAP_cmd, IPSTATUS_cmd };
 
 void setup() {
 
@@ -67,10 +67,16 @@ void loop() {
 
   currentMicros = micros(); // grab current time
 
-// use state machine to get ESP module ready send or receive data  
+  // Try to get out of unknown state by sending 'AT' to test if ESP is responding
+  if(state_of_ESP == unknown) {
+  	ESP8266.print("AT+RST\r\n");
+  	state_of_ESP = RST_cmd;
+  }
+
+	// use state machine to get ESP module ready send or receive data  
   
   ESP8266.print("AT\r\n");	// Send 'AT' to test if ESP is responding
-  switch(espState) {
+  switch(state_of_ESP) {
     
   }
   
