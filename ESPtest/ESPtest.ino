@@ -21,9 +21,18 @@ esptool.py write_flash 0x00000 at/noboot/eagle.flash.bin 0x3e000 at/blank.bin 0x
 *   Project Defines / Constants                                                 *
 ********************************************************************************/
 
-#define ESP8266_rxPin 		4
-#define ESP8266_txPin 		5
-#define ESP_DEFAULT_BAUD 	115200
+#define ESP8266_rxPin 				4
+#define ESP8266_txPin 				5
+#define ESP_BUFFER_SIZE				64						// Bytes
+#define ESP_DEFAULT_BAUD 			115200				// Bits per second
+#define ESP_CHECK_BUFFER_RATE	3000 					// micro seconds
+#define ESP_RESPONSE_TIME			167						// multiplier of above (~1/2 second)
+
+/* 
+	Above rate derived from buffer size / bytes per second (baud rate). Gives the time it 
+	would take to fill the ESP buffer. Buffer should be checked more frequently than this 
+	calculated time. At 115200 bps the buffer fills in 4.44 ms. Check every 3 ms (3000uS)
+*/
 
 // WiFi SSID and Password definition
 const char SSID_ESP[] = "YOUR SSID";
@@ -41,27 +50,50 @@ const char CWMODE_BOTH    = '3';
 const char CIPMUX_SINGLE  = '0';
 const char CIPMUX_MULTI   = '1';
 
+// Definition of ESP serial connection / UART
 ESP8266 ESPcomms(ESP8266_rxPin, ESP8266_txPin);
 
 /********************************************************************************
 *   Program                                                                     *
 ********************************************************************************/
 
-unsigned long previousMicros, currentMicros, interval;
+unsigned long previousMicros, 
+							currentMicros, 
+							interval, 
+							responseTime;
 
-enum ESPstatus { unknown, AT_cmd, RST_cmd, LAP_cmd, JAP_cmd, QAP_cmd, IPSTATUS_cmd };
+enum ESPstatus { 
+									unknown, 
+									AT_cmd, 
+									RST_cmd, 
+									LAP_cmd, 
+									JAP_cmd, 
+									QAP_cmd, 
+									IPSTATUS_cmd 
+								};
+
+
+/******************** Arduino runs this once at powerup/reset ********************/
+
 
 void setup() {
+
+  currentMicros = previousMicros = micros();	// Get initial timestamp
+  interval = ESP_CHECK_BUFFER_RATE;						// Max time before checking serial buffer in uS
+  responseTime = 0;														// Time to wait for ESP to respond to AT command
+  ESPstatus state_of_ESP = unknown;
 
   ESP8266.begin(ESP_DEFAULT_BAUD);
   ESP8266.listen();														// not needed unless using other software serial instances
   Serial.begin(57600); 												// For printing status and debug
+  
   delay(3000);																// Delay before kicking things off
-  currentMicros = previousMicros = micros();	// Get initial timestamp
-  interval = 3000;														// Max time before checking serial buffer
-  ESPstatus state_of_ESP = unknown;
+  
+} // end setup
 
-}
+
+/******************** Arduino will loop on this code forever ********************/
+
 
 void loop() {
 
@@ -89,9 +121,12 @@ void loop() {
   if (((unsigned long)(currentMicros - previousMicros) >= interval) || (ESP8266.overflow()) {
   
     // Check our serial buffer before it overflows!
+  	if(ESP8266.available() > 0) {
 
+  	}
+    
     // save the "current" time
     previousMicros = micros();
   }
 
-}
+} // end loop
