@@ -12,7 +12,7 @@ class ESP8266 : public SoftwareSerial {
     ESP8266(unsigned int pinESPrx, unsigned int pinESPtx, const char ssid[], const char password[]);
 
     // Destructor
-    ~ESP8266();
+    ~ESP8266() { /* nothing to destruct */ };
   
     // Member functions
     void    setwifi_password	(const char password[]);
