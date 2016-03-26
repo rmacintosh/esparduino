@@ -62,6 +62,8 @@ unsigned long previousMicros,
 							interval, 
 							responseTime;
 
+char readBuffer[ESP_BUFFER_SIZE + 1] = ""; 
+
 enum ESPstatus { 
 									unknown, 
 									AT_cmd, 
@@ -102,7 +104,7 @@ void loop() {
 
   // Try to get out of unknown state by sending a reset to ESP module
   if(state_of_ESP == unknown) {
-  	ESP8266.print("AT+RST\r\n");
+  	ESP8266.println("AT+RST");
   	state_of_ESP = RST_cmd;
   }
 
@@ -110,23 +112,42 @@ void loop() {
   switch(state_of_ESP) {
   
   	case RST_cmd:				// Last command sent to ESP module was a reset
-    	ESP8266.print("AT\r\n");
+    	ESP8266.println("AT");
     	break;
     
     default:
     	break;
   }
 
-  // check if "interval" time has passed (4 milliseconds)
-  if (((unsigned long)(currentMicros - previousMicros) >= interval) || (ESP8266.overflow()) {
-  
+  // check if "interval" time has passed (3 milliseconds)
+  if ((unsigned long)(currentMicros - previousMicros) >= interval) {
+		
+  	// Indicate an overflow occurred, call clears overflow flag
+  	if(ESP8266.overflow())
+  		Serial.println("Overflow occurred!");
+
     // Check our serial buffer before it overflows!
-  	if(ESP8266.available() > 0) {
+    int bytes_to_read = ESP8266.available();
+  	char readBuffer[bytes_to_read + 1] = ""; 
+  	
+  	if(bytes_to_read > 0) {
+  	
+  		for(int i = 0; i < bytes_to_read; i++)
+  			readBuffer[i] = ESP8266.read();
+  	
+  		readBuffer[bytes_to_read] = "\0";
+  		Serial.println(readBuffer);
 
   	}
-    
+
     // save the "current" time
     previousMicros = micros();
+    responseTime++;
+  }
+
+  if(responseTime >= ESP_RESPONSE_TIME) {
+  	responseTime = 0;
+  	Serial.println("Reset responseTime");
   }
 
 } // end loop
