@@ -114,7 +114,7 @@ void loop() {
 	// Use state machine to get ESP module ready to send or receive data  
   switch(state_of_ESP) {
   
-  	case ESPstatus.RST_cmd:				// Last command sent to ESP module was a reset
+  	case RST_cmd:				// Last command sent to ESP module was a reset
     	ESPcomms.println("AT");
     	break;
     
@@ -131,14 +131,13 @@ void loop() {
 
     // Check our serial buffer before it overflows!
     int bytes_to_read = ESPcomms.available();
-  	char readBuffer[bytes_to_read + 1] = ""; 
   	
   	if(bytes_to_read > 0) {
   	
   		for(int i = 0; i < bytes_to_read; i++)
   			readBuffer[i] = ESPcomms.read();
   	
-  		readBuffer[bytes_to_read] = "\0";
+  		readBuffer[bytes_to_read] = '\0';
   		Serial.println(readBuffer);
 
   	}
