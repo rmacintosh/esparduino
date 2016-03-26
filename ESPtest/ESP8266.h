@@ -1,6 +1,8 @@
 #ifndef ESP8266_H_
 #define ESP8266_H_
 
+#include <SoftwareSerial.h>   // This class will derive from the softwareserial class
+
 class ESP8266 : public SoftwareSerial {
   
   public:

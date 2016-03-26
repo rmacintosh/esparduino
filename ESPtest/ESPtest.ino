@@ -83,10 +83,9 @@ void setup() {
   currentMicros = previousMicros = micros();	// Get initial timestamp
   interval = ESP_CHECK_BUFFER_RATE;						// Max time before checking serial buffer in uS
   responseTime = 0;														// Time to wait for ESP to respond to AT command
-  ESPstatus state_of_ESP = unknown;
-
-  ESP8266.begin(ESP_DEFAULT_BAUD);
-  ESP8266.listen();														// not needed unless using other software serial instances
+  
+  ESPcomms.begin(ESP_DEFAULT_BAUD);
+  ESPcomms.listen();														// not needed unless using other software serial instances
   Serial.begin(57600); 												// For printing status and debug
   
   delay(3000);																// Delay before kicking things off
@@ -102,17 +101,21 @@ void loop() {
 	// Grab current time
   currentMicros = micros();
 
+  // Init state of ESP
+	ESPstatus state_of_ESP = unknown;
+
+
   // Try to get out of unknown state by sending a reset to ESP module
   if(state_of_ESP == unknown) {
-  	ESP8266.println("AT+RST");
+  	ESPcomms.println("AT+RST");
   	state_of_ESP = RST_cmd;
   }
 
 	// Use state machine to get ESP module ready to send or receive data  
   switch(state_of_ESP) {
   
-  	case RST_cmd:				// Last command sent to ESP module was a reset
-    	ESP8266.println("AT");
+  	case ESPstatus.RST_cmd:				// Last command sent to ESP module was a reset
+    	ESPcomms.println("AT");
     	break;
     
     default:
@@ -123,17 +126,17 @@ void loop() {
   if ((unsigned long)(currentMicros - previousMicros) >= interval) {
 		
   	// Indicate an overflow occurred, call clears overflow flag
-  	if(ESP8266.overflow())
+  	if(ESPcomms.overflow())
   		Serial.println("Overflow occurred!");
 
     // Check our serial buffer before it overflows!
-    int bytes_to_read = ESP8266.available();
+    int bytes_to_read = ESPcomms.available();
   	char readBuffer[bytes_to_read + 1] = ""; 
   	
   	if(bytes_to_read > 0) {
   	
   		for(int i = 0; i < bytes_to_read; i++)
-  			readBuffer[i] = ESP8266.read();
+  			readBuffer[i] = ESPcomms.read();
   	
   		readBuffer[bytes_to_read] = "\0";
   		Serial.println(readBuffer);
